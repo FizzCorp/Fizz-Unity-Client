@@ -32,6 +32,15 @@ namespace Fizz.Chat.Impl
             }
         }
 
+        public bool IsConnected 
+        {
+            get 
+            {
+                if (_messageListener == null) return false;
+                return _messageListener.IsConnected;
+            }
+        }
+
         public FizzChatClient (string appId, IFizzActionDispatcher dispatcher)
         {
             if (dispatcher == null)

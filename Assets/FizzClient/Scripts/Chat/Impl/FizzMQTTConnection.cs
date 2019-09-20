@@ -36,6 +36,8 @@ namespace Fizz.Chat.Impl
 
     public interface IFizzMqttConnection
     {
+        bool IsConnected { get; }
+
         Action<object, bool> Connected { set; get; }
         Action<object, FizzMqttDisconnectedArgs> Disconnected { set; get; }
         Action<object, byte[]> MessageReceived { set; get; }
@@ -62,6 +64,8 @@ namespace Fizz.Chat.Impl
         private readonly bool _cleanSession;
         private bool _manualDisconnect = false;
         private readonly IFizzActionDispatcher _dispatcher;
+
+        public bool IsConnected { get { return (_client == null)? false : _client.IsConnected; } }
 
         // TODO: make this thread safe using Interlocked.Add/Interlocked.Remove
         public Action<object, bool> Connected { set; get; }

@@ -127,8 +127,10 @@ namespace Fizz
         {
             try
             {
-                if (State == FizzClientState.Closed)
+                if (State == FizzClientState.Closed) {
+                    FizzUtils.DoCallback(null, callback);
                     return;
+                }
 
                 Close(() => { FizzUtils.DoCallback(null, callback); });
             }
@@ -169,7 +171,7 @@ namespace Fizz
 
         public FizzClientState State { get; private set; }
 
-        public string Version { get { return "v1.5.0"; } }
+        public string Version { get { return "v1.5.3"; } }
 
         private void Close(Action callback)
         {

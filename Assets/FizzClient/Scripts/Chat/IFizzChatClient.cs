@@ -7,6 +7,8 @@ namespace Fizz.Chat
     {
         IFizzChannelMessageListener Listener { get; }
 
+        bool IsConnected { get; }
+        
         void PublishMessage (
             string channelId,
             string nick,
