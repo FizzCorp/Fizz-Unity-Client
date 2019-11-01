@@ -13,8 +13,7 @@ namespace Fizz.Chat.Impl
         private static readonly FizzException ERROR_CONNECTION_FAILED = new FizzException (FizzError.ERROR_REQUEST_FAILED, "request_failed");
         private static readonly FizzException ERROR_AUTH_FAILED = new FizzException (FizzError.ERROR_AUTH_FAILED, "auth_failed");
 
-        public bool IsConnected { get { return (_connection == null)? false : _connection.IsConnected; } }
-
+		public bool IsConnected { get { return (_connection == null)? false : _connection.IsConnected; } }
         public Action<bool> OnConnected { get; set; }
         public Action<FizzException> OnDisconnected { get; set; }
         public Action<FizzChannelMessage> OnMessagePublished { get; set; }
@@ -133,7 +132,7 @@ namespace Fizz.Chat.Impl
         {
             if (_connection != null)
             {
-                FizzLogger.W ("Received conneced event for old connection.");
+                FizzLogger.W ("Received connected event for old connection.");
             }
 
             FizzLogger.D ("MQTT - OnConnected: " + sessionPresent);
@@ -257,7 +256,6 @@ namespace Fizz.Chat.Impl
                 payload["nick"],
                 payload["to"],
                 payload["body"],
-                payload["topic"],
                 dataDict,
                 translations,
                 message.Created

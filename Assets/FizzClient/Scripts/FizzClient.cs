@@ -1,15 +1,16 @@
-﻿using Fizz.Chat;
-using Fizz.Chat.Impl;
-using Fizz.Common;
-using Fizz.Ingestion;
-using Fizz.Ingestion.Impl;
-using Fizz.Moderation;
-using Fizz.Moderation.Impl;
-using Fizz.Threading;
-using System;
+﻿using System;
 
 namespace Fizz
 {
+    using Chat;
+    using Chat.Impl;
+    using Common;
+    using Ingestion;
+    using Ingestion.Impl;
+    using Moderation;
+    using Moderation.Impl;
+    using Threading;
+
     public enum FizzClientState
     {
         Closed,
@@ -26,27 +27,33 @@ namespace Fizz
     }
 
     public interface IFizzClient
-    {
-        void Open(string userId, string locale, FizzServices services, Action<FizzException> callback);
-        void Close(Action<FizzException> callback);
-        void Update();
-
+    { 
         IFizzChatClient Chat { get; }
+
         IFizzIngestionClient Ingestion { get; }
+
         IFizzModerationClient Moderation { get; }
+
         FizzClientState State { get; }
+
         string Version { get; }
+
+        void Open(string userId, IFizzLanguageCode language, FizzServices services, Action<FizzException> callback);
+
+        void Close(Action<FizzException> callback);
+
+        void Update();
     }
 
     public class FizzClient : IFizzClient
     {
-        readonly FizzChatClient _chat;
-        readonly IFizzRestClient _restClient;
-        readonly IFizzAuthRestClient _authClient;
-        readonly IFizzSessionProvider _sessionClient;
-        readonly FizzIngestionClient _ingestionClient;
-        readonly FizzModerationClient _moderationClient;
-        readonly FizzActionDispatcher _dispatcher = new FizzActionDispatcher();
+        private readonly FizzChatClient _chat;
+        private readonly FizzIngestionClient _ingestionClient;
+        private readonly FizzModerationClient _moderationClient;
+        private readonly FizzActionDispatcher _dispatcher;
+        private readonly IFizzRestClient _restClient;
+        private readonly IFizzAuthRestClient _authClient;
+        private readonly IFizzSessionProvider _sessionClient;
 
         public FizzClient(string appId, string appSecret)
         {
@@ -55,17 +62,18 @@ namespace Fizz
                 throw FizzException.ERROR_INVALID_APP_ID;
             }
 
-            if (string.IsNullOrEmpty (appSecret))
+            if (string.IsNullOrEmpty(appSecret))
             {
                 throw FizzException.ERROR_INVALID_APP_SECRET;
             }
 
+            _dispatcher = new FizzActionDispatcher();
             _chat = new FizzChatClient(appId, _dispatcher);
             _restClient = new FizzRestClient(_dispatcher);
             _sessionClient = new FizzIdSecretSessionProvider(appId, appSecret, _restClient);
             _authClient = new FizzAuthRestClient(_restClient);
             _ingestionClient = new FizzIngestionClient(new FizzInMemoryEventLog(), _dispatcher);
-            _moderationClient = new FizzModerationClient ();
+            _moderationClient = new FizzModerationClient();
         }
 
         public FizzClient(string appId, IFizzSessionProvider sessionClient)
@@ -75,74 +83,13 @@ namespace Fizz
                 throw FizzException.ERROR_INVALID_APP_ID;
             }
 
+            _dispatcher = new FizzActionDispatcher();
             _sessionClient = sessionClient;
             _chat = new FizzChatClient(appId, _dispatcher);
             _restClient = new FizzRestClient(_dispatcher);
             _authClient = new FizzAuthRestClient(_restClient);
             _ingestionClient = new FizzIngestionClient(new FizzInMemoryEventLog(), _dispatcher);
-            _moderationClient = new FizzModerationClient ();
-        }
-
-        public void Open(string userId, string locale, FizzServices services, Action<FizzException> callback)
-        {
-            try
-            {
-                if (State == FizzClientState.Opened)
-                    return;
-
-                FizzSessionRepository sessionRepo = new FizzSessionRepository(userId, locale, _sessionClient);
-                _authClient.Open(sessionRepo, ex =>
-                {
-                    if (ex == null)
-                    {
-                        if (services.HasFlag(FizzServices.Chat))
-                        {
-                            _chat.Open(userId, _authClient, sessionRepo);
-                        }
-                        if (services.HasFlag(FizzServices.Analytics))
-                        {
-                            _ingestionClient.Open(userId, sessionRepo.Session._serverTS, _authClient);
-                        }
-                        if (services.HasFlag(FizzServices.Moderation))
-                        {
-                            _moderationClient.Open (_authClient);
-                        }
-
-                        State = FizzClientState.Opened;
-                        FizzUtils.DoCallback(null, callback);
-                    }
-                    else
-                    {
-                        FizzUtils.DoCallback(ex, callback);
-                    }
-                });
-            }
-            catch (FizzException ex)
-            {
-                FizzUtils.DoCallback(ex, callback);
-            }
-        }
-
-        public void Close(Action<FizzException> callback)
-        {
-            try
-            {
-                if (State == FizzClientState.Closed) {
-                    FizzUtils.DoCallback(null, callback);
-                    return;
-                }
-
-                Close(() => { FizzUtils.DoCallback(null, callback); });
-            }
-            catch (FizzException ex)
-            {
-                FizzUtils.DoCallback(ex, callback);
-            }
-        }
-
-        public void Update()
-        {
-            _dispatcher.Process();
+            _moderationClient = new FizzModerationClient();
         }
 
         public IFizzChatClient Chat
@@ -171,15 +118,76 @@ namespace Fizz
 
         public FizzClientState State { get; private set; }
 
-        public string Version { get { return "v1.5.3"; } }
+        public string Version { get { return "v1.5.5"; } }
 
+        public void Close(Action<FizzException> callback)
+        {
+            try
+            {
+                if (State == FizzClientState.Closed)
+                {
+                    FizzUtils.DoCallback(null, callback);
+                    return;
+                }
+
+                Close(() => { FizzUtils.DoCallback(null, callback); });
+            }
+            catch (FizzException ex)
+            {
+                FizzUtils.DoCallback(ex, callback);
+            }
+        }
+
+        public void Open(string userId, IFizzLanguageCode locale, FizzServices services, Action<FizzException> callback)
+        {
+            try
+            {
+                if (State == FizzClientState.Opened)
+                    return;
+
+                FizzSessionRepository sessionRepo = new FizzSessionRepository(userId, locale.Code, _sessionClient);
+                _authClient.Open(sessionRepo, ex =>
+                {
+                    if (ex == null)
+                    {
+                        if (services.HasFlag(FizzServices.Chat))
+                        {
+                            _chat.Open(userId, _authClient, sessionRepo);
+                        }
+                        if (services.HasFlag(FizzServices.Analytics))
+                        {
+                            _ingestionClient.Open(userId, sessionRepo.Session._serverTS, _authClient);
+                        }
+                        if (services.HasFlag(FizzServices.Moderation))
+                        {
+                            _moderationClient.Open(_authClient);
+                        }
+
+                        State = FizzClientState.Opened;
+                        FizzUtils.DoCallback(null, callback);
+                    }
+                    else
+                    {
+                        FizzUtils.DoCallback(ex, callback);
+                    }
+                });
+            }
+            catch (FizzException ex)
+            {
+                FizzUtils.DoCallback(ex, callback);
+            }
+        }
+        public void Update()
+        {
+            _dispatcher.Process();
+        }
         private void Close(Action callback)
         {
             _ingestionClient.Close(() =>
             {
                 _authClient.Close();
                 _chat.Close(callback);
-                _moderationClient.Close ();
+                _moderationClient.Close();
                 State = FizzClientState.Closed;
             });
         }

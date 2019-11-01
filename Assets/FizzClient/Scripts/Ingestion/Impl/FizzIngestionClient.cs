@@ -99,7 +99,6 @@ namespace Fizz.Ingestion.Impl
             {
                 _interval.Disable();
                 UpdateSessionTimestamp ();
-                //SessionEnded(_startTime, FizzUtils.Now() + _timeOffset);
 
                 _onLogEmpty = () =>
                 {

@@ -1,11 +1,11 @@
-﻿using System.Text;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
 
 using Fizz;
 using Fizz.Chat;
+using Fizz.Common;
 
 /*
  * Implement a basic multi-lingual chat client.
@@ -46,7 +46,6 @@ public class ChatPanel : MonoBehaviour {
     //Channel
     private static string CHANNEL_ID = "global-sample";
 
-    [SerializeField] GameObject chatMessagePanel;
     [SerializeField] Dropdown userIdDropdown;
     [SerializeField] Dropdown languageDropdown;
     [SerializeField] Button connectButton;
@@ -63,7 +62,7 @@ public class ChatPanel : MonoBehaviour {
         }
     }
 
-    public string Locale
+    public IFizzLanguageCode Locale
     {
         get
         {
@@ -88,23 +87,21 @@ public class ChatPanel : MonoBehaviour {
         _client.Update();
     }
 
-    private string MapLocale(string selection) 
+    private IFizzLanguageCode MapLocale(string selection) 
     {
         switch (selection)
         {
             case "French":
-                return "fr";
+                return FizzLanguageCodes.French;
             case "Spanish":
-                return "es";
+                return FizzLanguageCodes.Spanish;
             default:
-                return "en";
+                return FizzLanguageCodes.English;
         }
     }
 
     private void OnBtnConnect()
     {
-        Debug.Log("Connecting to Fizz!!!");
-
         connectButton.interactable = false;
         _client.Open(UserId, Locale, FizzServices.All, ex => {
             if (ex != null)
@@ -117,13 +114,10 @@ public class ChatPanel : MonoBehaviour {
                 _client.Chat.Listener.OnMessagePublished = OnMessagePublished;
             }
         });
-
     }
 
     private void OnFizzConnected(bool syncRequired)
     {
-        Debug.Log("Connected to Fizz!!!");
-
         if (!syncRequired)
         {
             return;
@@ -151,18 +145,14 @@ public class ChatPanel : MonoBehaviour {
             return;
         }
 
-        Debug.Log("Updating message history");
-
         foreach (FizzChannelMessage message in messages)
         {
-            _logView.AddChatLog(new MessageData(message, Locale).SaveToString());
+            _logView.AddChatLog(new MessageData(message, Locale.Code).SaveToString());
         }
     }
 
     private void OnMessagePublished(FizzChannelMessage message)
     {
-        Debug.Log("Message published");
-
         if (_receivedMessage.Contains(message.Id))
         {
             // duplicate message;
@@ -170,14 +160,12 @@ public class ChatPanel : MonoBehaviour {
         }
 
         _receivedMessage.Add(message.Id);
-        string json = new MessageData(message, Locale).SaveToString();
+        string json = new MessageData(message, Locale.Code).SaveToString();
         _logView.AddChatLog(json);
     }
 
     private void OnSendMessage(string text)
     {
-        Debug.Log("Sending message");
-
         _client.Chat.PublishMessage(
             CHANNEL_ID, 
             UserId, 

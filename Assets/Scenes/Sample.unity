@@ -559,7 +559,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9f4299fae60a40d5981827d5ca04e5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chatMessagePanel: {fileID: 254529780}
   userIdDropdown: {fileID: 6854899}
   languageDropdown: {fileID: 1358530816}
   connectButton: {fileID: 1670546938}
@@ -1783,7 +1782,7 @@ Prefab:
     - target: {fileID: 224564016116840410, guid: c83be76ca42054f54b634ebb372723e0,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0000294087
+      value: 0.000037588772
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c83be76ca42054f54b634ebb372723e0, type: 2}

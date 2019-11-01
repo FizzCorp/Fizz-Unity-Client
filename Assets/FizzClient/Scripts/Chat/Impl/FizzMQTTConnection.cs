@@ -121,6 +121,12 @@ namespace Fizz.Chat.Impl
 
         public void ConnectAsync ()
         {
+            _manualDisconnect = false;
+            ConnectInternal ();
+        }
+
+        private void ConnectInternal ()
+        {
             ThreadPool.QueueUserWorkItem (payload =>
             {
                 try
@@ -128,9 +134,14 @@ namespace Fizz.Chat.Impl
                     byte ret = _client.Connect (_clientId, _username, _password, _cleanSession, 30);
                     if (ret == 0)
                     {
-                        if (Connected != null)
-                        {
-                            _dispatcher.Post (() => Connected.Invoke (this, _client.SessionPresent));
+                        if (!_manualDisconnect) {
+                            if (Connected != null)
+                            {
+                                _dispatcher.Post (() => Connected.Invoke (this, _client.SessionPresent));
+                            }
+                        }
+                        else {
+                           DisconnectAsync();
                         }
                     }
                     else
@@ -155,14 +166,12 @@ namespace Fizz.Chat.Impl
 
         public void DisconnectAsync ()
         {
-            if (_client == null || !_client.IsConnected)
-            {
-                return;
-            }
-
             _manualDisconnect = true;
-
-            _client.Disconnect ();
+            
+            if (IsConnected)
+            {
+                _client.Disconnect ();
+            }
         }
 
         private void OnDisconnected (bool clientConnected, Exception ex)
@@ -174,8 +183,7 @@ namespace Fizz.Chat.Impl
 
             if (_manualDisconnect)
             {
-                _manualDisconnect = false;
-                return;
+                return; 
             }
 
             if (!_retry)
@@ -183,13 +191,12 @@ namespace Fizz.Chat.Impl
                 return;
             }
 
-            _dispatcher.Delay (RETRY_DELAY_MS, () =>
-            {
+            _dispatcher.Delay(RETRY_DELAY_MS, () => {
                 try
                 {
-                    if (_client != null)
+                    if (_client != null && !_manualDisconnect)
                     {
-                        ConnectAsync ();
+                        ConnectInternal ();
                     }
                 }
                 catch
