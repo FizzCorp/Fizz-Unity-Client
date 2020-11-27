@@ -4,12 +4,6 @@ using Fizz.Common;
 
 namespace Fizz.Threading
 {
-    struct Timer
-    {
-        Action action;
-        long time;    
-    }
-
     public class FizzActionDispatcher: IFizzActionDispatcher
     {
         // TODO: Switch to ReaderWriterLock

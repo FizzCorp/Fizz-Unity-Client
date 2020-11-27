@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Fizz
+﻿namespace Fizz
 {
     public class FizzError
     {

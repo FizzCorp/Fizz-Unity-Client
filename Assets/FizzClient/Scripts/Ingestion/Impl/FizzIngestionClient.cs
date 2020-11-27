@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Text;
-using System.IO;
 using System.Collections.Generic;
 
 using Fizz.Common;
@@ -29,8 +27,8 @@ namespace Fizz.Ingestion.Impl
         long _timeOffset;
         long _startTime;
         string _sessionId;
-        IFizzEventLog _eventLog;
-        IFizzActionDispatcher _dispatcher;
+        readonly IFizzEventLog _eventLog;
+        readonly IFizzActionDispatcher _dispatcher;
         Action _onLogEmpty;
         bool _flushInProgress = false;
         readonly FizzInterval _interval = null;
@@ -332,15 +330,6 @@ namespace Fizz.Ingestion.Impl
             }
             
             return events.ToString();
-        }
-
-        private static string StreamToString(Stream stream)
-        {
-            stream.Position = 0;
-            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
-            {
-                return reader.ReadToEnd();
-            }
         }
 
         private JSONNode ParseEvent(FizzEvent item)

@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Security.Cryptography;
 using System.Collections.Generic;
-using Fizz.Common.Json;
 
 namespace Fizz.Common
 {
     public class FizzAuthRestClient: IFizzAuthRestClient
     {
-        private IFizzRestClient _restClient;
+        private readonly IFizzRestClient _restClient;
         private FizzSessionRepository _sessionRepository;
-        private Queue<Action<FizzException>> _requestQueue = new Queue<Action<FizzException>>();
+        private readonly Queue<Action<FizzException>> _requestQueue = new Queue<Action<FizzException>>();
 
         public FizzAuthRestClient(IFizzRestClient restClient)
         {
@@ -112,7 +110,7 @@ namespace Fizz.Common
             }
             else
             {
-                return FizzUtils.headers(_sessionRepository.Session._token);
+                return FizzUtils.Headers(_sessionRepository.Session._token);
             }
         }
 

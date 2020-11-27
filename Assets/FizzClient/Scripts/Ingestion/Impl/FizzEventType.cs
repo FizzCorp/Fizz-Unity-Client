@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Fizz.Ingestion.Impl
+﻿namespace Fizz.Ingestion.Impl
 {
     public enum FizzEventType
     {

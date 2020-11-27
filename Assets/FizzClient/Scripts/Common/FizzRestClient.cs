@@ -20,6 +20,7 @@ namespace Fizz.Common
         private static readonly FizzException ERROR_INVALID_HOST = new FizzException(FizzError.ERROR_BAD_ARGUMENT, "invalid_host");
         private static readonly FizzException ERROR_INVALID_PATH = new FizzException(FizzError.ERROR_BAD_ARGUMENT, "invalid_path");
         private static readonly FizzException ERROR_INVALID_CONTENT = new FizzException(FizzError.ERROR_BAD_ARGUMENT, "invalid_request_content");
+        public static readonly FizzException ERROR_INVALID_RESPONSE_FORMAT = new FizzException (FizzError.ERROR_REQUEST_FAILED, "invalid_response_format");
 
         private static readonly string CONTENT_TYPE = "application/json";
         private static readonly int REQ_TIMEOUT = 15*1000;

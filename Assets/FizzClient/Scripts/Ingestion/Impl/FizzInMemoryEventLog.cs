@@ -19,7 +19,7 @@ namespace Fizz.Ingestion.Impl
 
     public class FizzInMemoryEventLog : IFizzEventLog
     {
-        private SortedList<long, FizzEvent> log = new SortedList<long, FizzEvent> (new FizzInMemoryEventComparer ());
+        private readonly SortedList<long, FizzEvent> log = new SortedList<long, FizzEvent> (new FizzInMemoryEventComparer ());
 
         public void Put(FizzEvent item)
         {

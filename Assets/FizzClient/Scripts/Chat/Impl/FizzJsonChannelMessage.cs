@@ -5,7 +5,7 @@ namespace Fizz.Chat.Impl
 {
     public class FizzJsonChannelMessage: FizzChannelMessage
     {
-        private static readonly string KEY_ID = "id";
+        public static readonly string KEY_ID = "id";
         public static readonly string KEY_FROM = "from";
         public static readonly string KEY_NICK = "nick";
         public static readonly string KEY_TO = "to";

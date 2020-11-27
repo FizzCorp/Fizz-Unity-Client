@@ -1,5 +1,4 @@
-﻿//#define USE_SharpZipLib
-#if !UNITY_WEBPLAYER
+﻿#if !UNITY_WEBPLAYER
 #define USE_FileIO
 #endif
 

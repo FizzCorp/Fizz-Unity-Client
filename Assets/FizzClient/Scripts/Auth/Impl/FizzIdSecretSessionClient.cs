@@ -74,7 +74,7 @@ namespace Fizz.Common
         {
             string token = json["token"];
             string subId = json["subscriber_id"];
-            long now = 0;
+            long now;
             long.TryParse(json["now_ts"], out now);
 
             return new FizzSession(token, subId, now);

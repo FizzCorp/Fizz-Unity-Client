@@ -4,9 +4,9 @@ namespace Fizz.Common
 {
     public class FizzSessionRepository
     {
-        private string _userId;
-        private string _locale;
-        private IFizzSessionProvider _sessionProvider;
+        private readonly string _userId;
+        private readonly string _locale;
+        private readonly IFizzSessionProvider _sessionProvider;
 
         public FizzSession Session { get; private set; }
 

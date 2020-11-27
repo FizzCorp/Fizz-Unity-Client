@@ -54,9 +54,9 @@ namespace Fizz.Chat.Impl
         private static readonly FizzException ERROR_INVALID_DISPATCHER = new FizzException (FizzError.ERROR_BAD_ARGUMENT, "invalid_dispatcher");
 
         // TODO: make this exponential backoff
-        private static int RETRY_DELAY_MS = 10 * 1000;
+        private static readonly int RETRY_DELAY_MS = 10 * 1000;
 
-        private MqttClient _client;
+        private readonly MqttClient _client;
         private readonly string _username;
         private readonly string _password;
         private readonly string _clientId;
@@ -108,7 +108,7 @@ namespace Fizz.Chat.Impl
                             FizzConfig.MQTT_USE_TLS ? 8883 : 1883,
                             FizzConfig.MQTT_USE_TLS,
                             null, null,
-                            FizzConfig.MQTT_USE_TLS ? MqttSslProtocols.SSLv3 : MqttSslProtocols.None
+                            FizzConfig.MQTT_USE_TLS ? MqttSslProtocols.TLSv1_2 : MqttSslProtocols.None
                         );
 
             _client.ConnectionClosed += (sender, args) =>

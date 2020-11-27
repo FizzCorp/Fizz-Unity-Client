@@ -1,5 +1,4 @@
-﻿
-namespace Fizz.Ingestion
+﻿namespace Fizz.Ingestion
 {
     public interface IFizzIngestionClient
     {

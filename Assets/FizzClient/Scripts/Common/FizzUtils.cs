@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using Fizz.Chat;
+
 namespace Fizz.Common
 {
     public static class FizzUtils
@@ -58,7 +60,7 @@ namespace Fizz.Common
             return cur_time;
         }
 
-        public static IDictionary<string, string> headers (string sessionToken)
+        public static IDictionary<string, string> Headers (string sessionToken)
         {
             return new Dictionary<string, string> {
                     { FizzConfig.API_HEADER_SESSION_TOKEN, sessionToken }
@@ -109,6 +111,40 @@ namespace Fizz.Common
             ulong num = Convert.ToUInt64 (value);
             return ((Convert.ToUInt64 (variable) & num) == num);
 
+        }
+
+        public static FizzGroupMemberState ParseState(string value) {
+            if (value == null) {
+                throw new FizzException(FizzError.ERROR_BAD_ARGUMENT, "invalid_member_state");
+            }
+
+            switch(value) {
+                case "pending":
+                    return FizzGroupMemberState.Pending;
+
+                case "joined":
+                    return FizzGroupMemberState.Joined;
+
+                default:
+                    return FizzGroupMemberState.Unknown;
+            }
+        }
+
+        public static FizzGroupMemberRole ParseRole(string value) {
+            if (value == null) {
+                throw new FizzException(FizzError.ERROR_BAD_ARGUMENT, "invalid_member_role");
+            }
+
+            switch(value) {
+                case "member":
+                    return FizzGroupMemberRole.Member;
+                
+                case "moderator":
+                    return FizzGroupMemberRole.Moderator;
+
+                default:
+                    return FizzGroupMemberRole.Unknown;
+            }
         }
     }
 }
