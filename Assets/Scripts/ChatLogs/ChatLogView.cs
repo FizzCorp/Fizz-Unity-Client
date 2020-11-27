@@ -6,15 +6,15 @@ public class ChatLogView : MonoBehaviour {
     /// <summary>
     /// The cell view prefab.
     /// </summary>
-    [SerializeField] ChatLogCellView cellViewPrefab;
+    [SerializeField] ChatLogCellView cellViewPrefab = null;
     /// <summary>
     /// The chat log scroll.
     /// </summary>
-    [SerializeField] ScrollRect chatLogScroll;
+    [SerializeField] ScrollRect chatLogScroll = null;
     /// <summary>
     /// The input field.
     /// </summary>
-    [SerializeField] public InputField inputField;
+    [SerializeField] public InputField inputField = null;
 
     void Start() {
         /*

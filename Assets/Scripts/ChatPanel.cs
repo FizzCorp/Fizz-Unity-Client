@@ -46,9 +46,9 @@ public class ChatPanel : MonoBehaviour {
     //Channel
     private static string CHANNEL_ID = "global-sample";
 
-    [SerializeField] Dropdown userIdDropdown;
-    [SerializeField] Dropdown languageDropdown;
-    [SerializeField] Button connectButton;
+    [SerializeField] Dropdown userIdDropdown = null;
+    [SerializeField] Dropdown languageDropdown = null;
+    [SerializeField] Button connectButton = null;
 
     private IFizzClient _client = new FizzClient(APP_ID, APP_SECRET);
     private ChatLogView _logView;
